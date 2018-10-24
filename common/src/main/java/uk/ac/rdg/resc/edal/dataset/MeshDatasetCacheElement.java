@@ -14,9 +14,9 @@ class MeshDatasetCacheElement implements Serializable {
     private static final long serialVersionUID = 1L;
 
     List<GridCoordinates2D> outputCoords;
-    List<HZTDataSource.MeshCoordinates3D> coordsToRead;
+    List<Integer> coordsToRead;
 
-    MeshDatasetCacheElement(List<GridCoordinates2D> outputCoords, List<HZTDataSource.MeshCoordinates3D> coordsToRead) {
+    MeshDatasetCacheElement(List<GridCoordinates2D> outputCoords, List<Integer> coordsToRead) {
         this.outputCoords = outputCoords;
         this.coordsToRead = coordsToRead;
     }
@@ -25,7 +25,7 @@ class MeshDatasetCacheElement implements Serializable {
         return outputCoords;
     }
 
-    List<HZTDataSource.MeshCoordinates3D> getCoordsToRead() {
+    List<Integer> getCoordsToRead() {
         return coordsToRead;
     }
 }

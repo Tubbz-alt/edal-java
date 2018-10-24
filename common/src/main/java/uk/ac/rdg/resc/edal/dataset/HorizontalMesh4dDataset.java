@@ -99,7 +99,7 @@ public abstract class HorizontalMesh4dDataset extends
     }
 
     @Override
-    protected Array2D<Number> extractHorizontalData(HorizontalMesh4dVariableMetadata metadata,
+    public Array2D<Number> extractHorizontalData(HorizontalMesh4dVariableMetadata metadata,
             int tIndex, int zIndex, HorizontalGrid targetGrid, HZTDataSource dataSource)
             throws DataReadingException {
         HorizontalMesh grid = metadata.getHorizontalDomain();
@@ -110,25 +110,32 @@ public abstract class HorizontalMesh4dDataset extends
          * the output data
          */
         List<GridCoordinates2D> outputCoords;
-        List<MeshCoordinates3D> coordsToRead;
+        List<Integer> hIndices;
         MeshDatasetCacheElement meshDatasetCacheElement;
         if (meshDatasetCache.isKeyInCache(targetGrid)) {
             meshDatasetCacheElement = (MeshDatasetCacheElement) meshDatasetCache.get(targetGrid).getObjectValue();
             outputCoords = meshDatasetCacheElement.getOutputCoords();
-            coordsToRead = meshDatasetCacheElement.getCoordsToRead();
+            hIndices = meshDatasetCacheElement.getCoordsToRead();
         } else {
             outputCoords = new ArrayList<>();
-            coordsToRead = new ArrayList<>();
+            hIndices = new ArrayList<>();
             for (GridCell2D cell : targetGrid.getDomainObjects()) {
                 HorizontalPosition centre = cell.getCentre();
                 GridCoordinates2D coordinates = cell.getGridCoordinates();
                 int hIndex = grid.findIndexOf(centre);
-                MeshCoordinates3D meshCoords = new MeshCoordinates3D(hIndex, zIndex, tIndex);
+                //MeshCoordinates3D meshCoords = new MeshCoordinates3D(hIndex, zIndex, tIndex);
                 outputCoords.add(coordinates);
-                coordsToRead.add(meshCoords);
+                hIndices.add(hIndex);
             }
-            meshDatasetCacheElement = new MeshDatasetCacheElement(outputCoords, coordsToRead);
+            meshDatasetCacheElement = new MeshDatasetCacheElement(outputCoords, hIndices);
             meshDatasetCache.put(new Element(targetGrid, meshDatasetCacheElement));
+        }
+
+        List<MeshCoordinates3D> coordsToRead = new ArrayList<>();
+
+        for (int hIndex: hIndices) {
+            MeshCoordinates3D meshCoords = new MeshCoordinates3D(hIndex, zIndex, tIndex);
+            coordsToRead.add(meshCoords);
         }
 
         /*
